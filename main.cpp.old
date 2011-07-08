@@ -1,0 +1,45 @@
+#include <oslib/oslib.h>
+
+PSP_MODULE_INFO("Magnetic Man", 0, 1, 1);
+PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU);
+
+OSL_IMAGE *background, *magneticman;
+
+int main()
+{
+	oslInit(0);
+	oslInitGfx(OSL_PF_8888, 1);
+	
+	oslSetTransparentColor(RGB(255,0, 255));
+	
+	background = oslLoadImageFilePNG("Images/background.png", OSL_IN_RAM, OSL_PF_5551);
+	magneticman = oslLoadImageFilePNG("Images/magneticman.png", OSL_IN_RAM, OSL_PF_5551);
+	
+	
+	oslDisableTransparentColor();
+	
+	if (!background | !magneticman)
+		oslDebug("Impossible to load images");
+		
+	while (!osl_quit)
+	{
+		oslStartDrawing();
+		
+		oslReadKeys();
+		
+		if (osl_keys->held.left) magneticman->x -= 2;
+		if (osl_keys->held.right) magneticman->x += 2;
+		
+		oslDrawImage(background);
+		oslDrawImage(magneticman);
+		
+		oslEndDrawing();
+		
+		oslSyncFrame();
+	}
+	
+	oslEndGfx();
+	oslQuit();
+	
+	return 0;
+}
